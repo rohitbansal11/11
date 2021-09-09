@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>Document</title>
+    <style>
+        body>table {
+            width: 80%;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table.list {
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even),
+        table.list thead>tr {
+            background-color: #dddddd;
+        }
+
+        input[type=text],
+        input[type=number] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type=submit] {
+            width: 30%;
+            background-color: #ddd;
+            color: #000;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form div.form-action-buttons {
+            text-align: right;
+        }
+
+        a {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #0000ee;
+            margin-right: 4px;
+        }
+
+        label.validation-error {
+            color: red;
+            margin-left: 5px;
+        }
+
+        .hide {
+            display: none;
+        }
+        .header_top{
+            background-color: cadetblue;
+            display: flex;
+            align-items: stretch;
+        }
+        .form_search{
+            float: right;
+            height: 30px;
+            width: 100px;
+            margin-top: 20px;
+        }
+        .form_div{
+            display: flex;
+
+        }
+        .form_divv{
+            margin-right: 30px;
+            padding: 20px;
+
+        }
+    </style>
+</head>
+<body>
+    <header class="header_top">
+      <h1>task </h1>
+                <input type="text" class="form_search" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+              
+      </header>
+    
+    <div class="form_div">
+      <div class="form_divv">
+                <form onsubmit="event.preventDefault();onFormSubmit();" autocomplete="off">
+                    <input type="hidden" id="saveindex">
+                    <div>
+                        <label>Full Name*</label><label class="validation-error hide" id="fullNameValidationError">This
+                            field is required.</label>
+                        <input type="text" name="fullName" id="fullName">
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input type="text" name="email" id="email">
+                    </div>
+                    <div>
+                        <label>Mobile No.</label>
+                        <input type="text" name="mobile" id="mobile">
+                    </div>
+                    <div>
+                        <label>State</label>
+                        <input type="text" name="state" id="state">
+                    </div>
+                    <div>
+                        <label>City</label>
+                        <input type="text" name="city" id="city">
+                    </div>
+                    <div class="form-action-buttons">
+                        <input type="submit" value="Submit" onclick="saveData()" id="savebtn" >
+                    </div>
+
+                </form>
+                <button class="btn btn-primary" id="addtaskbtn" style="display: none; float: right;">Save</button>
+            </div>
+            
+            
+                <table class="list" id="formlist">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">Full Name</th>
+                            <th>Email</th>
+                            <th>mobile</th>
+                            <th onclick="sortTable(1)">State</th>
+                            <th>City</th>
+                            <th>Edit </th>
+                            <th>delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="showUsers">
+                       
+                    </tbody>
+                </table>
+            
+       </div>
+
+
+
+
+
+
+
+
+
+<script>
+     var selectedRow = null
+
+function onFormSubmit() {
+    if (validate()) {
+
+    showData()
+    }
+    resetForm();
+}
+function validate() {
+            isValid = true;
+            if (document.getElementById("fullName").value == "") {
+                isValid = false;
+                document.getElementById("fullNameValidationError").classList.remove("hide");
+            } else {
+                isValid = true;
+                if (!document.getElementById("fullNameValidationError").classList.contains("hide"))
+                    document.getElementById("fullNameValidationError").classList.add("hide");
+            }
+            return isValid;
+
+        }
+
+        function resetForm() {
+            document.getElementById("fullName").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("mobile").value = "";
+            document.getElementById("state").value = "";
+            document.getElementById("city").value = "";
+            selectedRow = null;
+        }
+function saveData() {
+            console.log('hihhafkj');
+
+            let fullName, email, mobile, state, city;
+            fullName = document.getElementById('fullName').value;
+            email = document.getElementById('email').value;
+            mobile = document.getElementById('mobile').value;
+            state = document.getElementById('state').value;
+            city = document.getElementById('city').value;
+
+            // localStorage.setItem('name' , name);
+            // localStorage.setItem('email' , email);
+            // localStorage.setItem('psw' , psw);
+            // 
+
+            let user_record = new Array();
+            user_record = JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')) : []
+
+            user_record.push({
+                'fullName': fullName,
+                'email': email,
+                'mobile': mobile,
+                'state': state,
+                'city': city
+            })
+            localStorage.setItem('user', JSON.stringify(user_record));
+
+            // console.log(localstorage.getItem('user'));
+
+
+
+        }
+        function showData() {
+            document.getElementById("showUsers").innerHTML = "";
+            let user_record = new Array();
+            user_record = JSON.parse(localStorage.getItem("user")) ? JSON.parse(localStorage.getItem("user")) : []
+            if (user_record) {
+                for (let i = 0; i < user_record.length; i++) {
+                    let addDiv = document.createElement('tr');
+                    
+                    addDiv.innerHTML = ` 
+                    <td>`+ user_record[i].fullName + `</td>
+                        <td>`+ user_record[i].email +`</td>
+                        <td>`+ user_record[i].mobile + `</td>
+                        <td>`+ user_record[i].state + `</td>
+                        <td>`+ user_record[i].city +`</td>
+                        <td><a onclick="edittask(${i})">Edit </a> </td>
+                        <td><a onclick="ondel(${i})">Delete </a></td>`;
+                    document.getElementById("showUsers").appendChild(addDiv);
+
+                }
+            }
+        }
+
+        function ondel(i) {
+
+            let webtask = localStorage.getItem('user');
+            console.log(webtask);
+            let taskobj = JSON.parse(webtask);
+            console.log(taskobj);
+            taskobj.splice(i, 1);
+            localStorage.setItem('user', JSON.stringify(taskobj));
+
+            // var delitem = JSON.parse()
+            // delitem.splice(i, 1);
+            // localStorage.setItem('user', JSON.stringify(delitem));
+            // var key = document.getElementById('fullName').value; //gets key from user
+            // localStorage.removeItem(key) //passes key to the removeItem method
+            // console.log("remove items");
+
+            showData()
+
+        }
+
+        // edittask
+        function edittask(i) {
+            let editfullName, editemail, editmobile, editstate, editcity;
+            editfullName = document.getElementById('fullName');
+            editemail = document.getElementById('email');
+            editmobile = document.getElementById('mobile');
+            editstate = document.getElementById('state');
+            editcity = document.getElementById('city');
+
+            let saveindex = document.getElementById("saveindex");
+            let addtaskbtn = document.getElementById("addtaskbtn");
+            let savebtn = document.getElementById("savebtn");
+            saveindex.value = i;
+            console.log(saveindex.value);
+            let webtask = localStorage.getItem('user');
+            let taskObj = JSON.parse(webtask);
+
+            // addtaskinput.value = taskObj[index]['task_name'];
+            editfullName.value= taskObj[i]['fullName'];
+            console.log(taskObj[i]['fullName']);
+            console.log(editfullName);
+            editemail.value = taskObj[i]['email'];
+            editmobile.value = taskObj[i]['mobile'];
+            editstate.value = taskObj[i]['state'];
+            editcity.value = taskObj[i]['city'];
+            addtaskbtn.style.display='block';
+            savebtn.style.display='none';
+
+        }
+
+        // savetask
+        let addtaskbtn = document.getElementById("addtaskbtn");
+        let savebtn = document.getElementById("savebtn");
+        addtaskbtn.addEventListener("click", task);
+          function task(){
+            let editfullName, editemail, editmobile, editstate, editcity;
+            editfullName = document.getElementById('fullName');
+            editemail = document.getElementById('email');
+            editmobile = document.getElementById('mobile');
+            editstate = document.getElementById('state');
+            editcity = document.getElementById('city');
+
+          
+            let webtask = localStorage.getItem("user");
+            let taskObj = JSON.parse(webtask); 
+            let saveindex = document.getElementById("saveindex").value;
+            // taskObj[saveindex] = 
+
+            for (keys in taskObj[saveindex]) {
+                 if(keys == 'fullName'){
+                    // taskObj[saveindex].task_name = addtaskinput.value;
+        
+                     taskObj[saveindex]['fullName'] = editfullName.value;
+                     taskObj[saveindex]['email'] = editemail.value;
+                     taskObj[saveindex]['mobile'] = editmobile.value;
+                     taskObj[saveindex]['state'] = editstate.value;
+                     taskObj[saveindex]['city'] = editcity.value;
+                     
+
+                 }
+                // if(keys == 'email'){
+                //     taskObj[saveindex].email = email;
+                // }
+                // if(keys == 'mobile'){
+                //     taskObj[saveindex].mobile = mobile;
+                // }
+                // if(keys == 'state'){
+                //     taskObj[saveindex].state = state;
+                // }
+                // if(keys == 'city'){
+                //     taskObj[saveindex].city = city;
+                // }
+              }
+            // taskObj[saveindex] = {'task_name':addtaskinput.value, 'completeStatus':false} ;
+          //  taskObj[saveindex][task_name] = addtaskinput.value;
+            
+            localStorage.setItem("user", JSON.stringify(taskObj));
+            editfullName.value='';
+            email.value='';
+            mobile.value='';
+            state.value='';
+            city.value='';
+            savebtn.style.display='none';
+            addtaskbtn.style.display='block';
+
+            showData();
+        }
+        function sortTable(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("formlist");
+  switching = true;
+
+  dir = "asc"; 
+  
+  while (switching) {
+    
+    switching = false;
+    rows = table.rows;
+   
+    for (i = 1; i < (rows.length - 1); i++) {
+      
+      shouldSwitch = false;
+      
+      
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      
+      
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      
+      
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      
+      switchcount ++;      
+    } else {
+      
+
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+function myFunction() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("formlist");
+  tr = table.getElementsByTagName("tr");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+        
+      }
+    }       
+  }
+}
+   showData();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+    
+</body>
+</html>
